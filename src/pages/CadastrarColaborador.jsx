@@ -264,3 +264,4 @@ const CadastrarColaborador = () => {
 
 export default CadastrarColaborador;
 
+
