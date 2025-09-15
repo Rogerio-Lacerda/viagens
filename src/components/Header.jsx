@@ -23,6 +23,12 @@ const Header = () => {
         >
           Minhas viagens
         </NavLink>
+        <NavLink
+          to="/cadastrar-colaborador"
+          className={({ isActive }) => (isActive ? styles.active : undefined)}
+        >
+          Cadastrar Colaborador
+        </NavLink>
       </nav>
     </header>
   );
