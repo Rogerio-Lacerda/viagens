@@ -21,52 +21,52 @@ const CadastrarColaborador = () => {
   const [toast, setToast] = React.useState('');
   const [typeToast, setTypeToast] = React.useState('success');
   const [isToast, setIsToast] = React.useState('');
-  const [areas, setAreas] = React.useState([]);
-  const [cargos, setCargos] = React.useState([]);
-  const [colaboradores, setColaboradores] = React.useState([]);
+  const [areas] = React.useState([]);
+  const [cargos] = React.useState([]);
+  // const [, setColaboradores] = React.useState([]);
 
-  // Carregar dados iniciais
-  React.useEffect(() => {
-    loadAreas();
-    loadCargos();
-    loadColaboradores();
-  }, []);
+  // // Carregar dados iniciais
+  // React.useEffect(() => {
+  //   loadAreas();
+  //   loadCargos();
+  //   loadColaboradores();
+  // }, []);
 
-  const loadAreas = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8888/api/area');
-      const data = await response.json();
-      setAreas(data);
-    } catch (error) {
-      console.error('Erro ao carregar áreas:', error);
-    }
-  };
+  // const loadAreas = async () => {
+  //   try {
+  //     const response = await fetch('http://127.0.0.1:8888/api/area');
+  //     const data = await response.json();
+  //     setAreas(data);
+  //   } catch (error) {
+  //     console.error('Erro ao carregar áreas:', error);
+  //   }
+  // };
 
-  const loadCargos = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8888/api/cargo');
-      const data = await response.json();
-      setCargos(data);
-    } catch (error) {
-      console.error('Erro ao carregar cargos:', error);
-    }
-  };
+  // const loadCargos = async () => {
+  //   try {
+  //     const response = await fetch('http://127.0.0.1:8888/api/cargo');
+  //     const data = await response.json();
+  //     setCargos(data);
+  //   } catch (error) {
+  //     console.error('Erro ao carregar cargos:', error);
+  //   }
+  // };
 
-  const loadColaboradores = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8888/api/colaborador');
-      const data = await response.json();
-      setColaboradores(data);
-    } catch (error) {
-      console.error('Erro ao carregar colaboradores:', error);
-    }
-  };
+  // const loadColaboradores = async () => {
+  //   try {
+  //     const response = await fetch('http://127.0.0.1:8888/api/colaborador');
+  //     const data = await response.json();
+  //     setColaboradores(data);
+  //   } catch (error) {
+  //     console.error('Erro ao carregar colaboradores:', error);
+  //   }
+  // };
 
   const handleChange = ({ target }) => {
     const { id, value, type, checked } = target;
-    setForms({ 
-      ...forms, 
-      [id]: type === 'checkbox' ? checked : value 
+    setForms({
+      ...forms,
+      [id]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -81,7 +81,9 @@ const CadastrarColaborador = () => {
     const dataDem = new Date(forms.data_dem);
 
     if (dataNasc >= dataAdm) {
-      setToast('Erro: A data de nascimento deve ser anterior à data de admissão');
+      setToast(
+        'Erro: A data de nascimento deve ser anterior à data de admissão',
+      );
       setIsToast(true);
       setTypeToast('error');
       setTimeout(() => setIsToast(false), 3000);
@@ -96,17 +98,22 @@ const CadastrarColaborador = () => {
       return;
     }
 
+    const formsAtualizado = {
+      ...forms,
+      cargo_id: Number(forms.cargo_id),
+      area: Number(forms.area),
+      gestao: null,
+      data_dem: '2040-04-28',
+    };
+
     try {
-      const response = await fetch(
-        'http://127.0.0.1:8888/api/colaborador/cadastro',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(forms),
+      const response = await fetch('http://127.0.0.1:8888/colaboradores/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(formsAtualizado),
+      });
 
       const data = await response.json();
 
@@ -164,7 +171,7 @@ const CadastrarColaborador = () => {
             onChange={handleChange}
             required
           />
-          
+
           <Input
             type="date"
             id="data_nasc"
@@ -173,7 +180,7 @@ const CadastrarColaborador = () => {
             onChange={handleChange}
             required
           />
-          
+
           <Input
             type="date"
             id="data_adm"
@@ -182,25 +189,35 @@ const CadastrarColaborador = () => {
             onChange={handleChange}
             required
           />
-          
-          <Input
+
+          {/* <Input
             type="date"
             id="data_dem"
             label="Data de Demissão"
             value={forms.data_dem}
             onChange={handleChange}
             required
-          />
+          /> */}
 
           <div className={styles.selectGroup}>
             <label htmlFor="cargo_id">Cargo</label>
-            <select 
-              id="cargo_id" 
-              value={forms.cargo_id} 
+            <select
+              id="cargo_id"
+              value={forms.cargo_id}
               onChange={handleChange}
               required
             >
-              <option value="">Selecione um cargo</option>
+              <option value="" disabled>
+                Selecione um cargo
+              </option>
+              <option value="1">Estagiario</option>
+              <option value="2">Assistente</option>
+              <option value="3">Analista</option>
+              <option value="4">Coordenador</option>
+              <option value="5">Gerente</option>
+              <option value="6">Diretor</option>
+              <option value="7">Ceo</option>
+
               {cargos.map((cargo) => (
                 <option key={cargo.id} value={cargo.id}>
                   {cargo.cargo}
@@ -211,13 +228,24 @@ const CadastrarColaborador = () => {
 
           <div className={styles.selectGroup}>
             <label htmlFor="area">Área</label>
-            <select 
-              id="area" 
-              value={forms.area} 
+            <select
+              id="area"
+              value={forms.area}
               onChange={handleChange}
               required
             >
-              <option value="">Selecione uma área</option>
+              <option value="" disabled>
+                Selecione um cargo
+              </option>
+              <option value="1">Financeiro</option>
+              <option value="2">Recursos humanos</option>
+              <option value="3">Comercial</option>
+              <option value="4">Marketing</option>
+              <option value="5">Suporte</option>
+              <option value="6">TI</option>
+              <option value="7">Operações</option>
+              <option value="8">Logistica</option>
+
               {areas.map((area) => (
                 <option key={area.id} value={area.id}>
                   {area.area}
@@ -226,13 +254,9 @@ const CadastrarColaborador = () => {
             </select>
           </div>
 
-          <div className={styles.selectGroup}>
+          {/* <div className={styles.selectGroup}>
             <label htmlFor="gestao">Gestor (Opcional)</label>
-            <select 
-              id="gestao" 
-              value={forms.gestao} 
-              onChange={handleChange}
-            >
+            <select id="gestao" value={forms.gestao} onChange={handleChange}>
               <option value="">Selecione um gestor</option>
               {colaboradores.map((colaborador) => (
                 <option key={colaborador.id} value={colaborador.id}>
@@ -240,7 +264,7 @@ const CadastrarColaborador = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           <div className={styles.checkboxGroup}>
             <label htmlFor="status" className={styles.checkboxLabel}>
@@ -263,5 +287,3 @@ const CadastrarColaborador = () => {
 };
 
 export default CadastrarColaborador;
-
-

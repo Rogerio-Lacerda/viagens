@@ -29,6 +29,12 @@ const Header = () => {
         >
           Cadastrar Colaborador
         </NavLink>
+        <NavLink
+          to="/listar-colaborador"
+          className={({ isActive }) => (isActive ? styles.active : undefined)}
+        >
+          Colaboradores
+        </NavLink>
       </nav>
     </header>
   );
